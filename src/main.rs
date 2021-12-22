@@ -1,9 +1,9 @@
 //! Based on https://youtu.be/rCKPgu4DvcE
 
 type Number = u32;
-type Label = String;
+type Label = &'static str;
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 enum FizzBuzzResult {
     Unhandled(Number),
     Handled(Label),
@@ -17,10 +17,10 @@ impl FizzBuzzResult {
         }
     }
 
-    fn last_step(self) -> Label {
+    fn last_step(self) -> String {
         match self {
             FizzBuzzResult::Unhandled(x) => x.to_string(),
-            FizzBuzzResult::Handled(s) => s,
+            FizzBuzzResult::Handled(s) => s.to_string(),
         }
     }
 }
@@ -37,10 +37,10 @@ fn handle(x: Number, div: Number, label: Label) -> FizzBuzzResult {
     }
 }
 
-fn fizz_buzz(x: Number) -> (Number, Label) {
-    let handle_3 = |x| handle(x, 3, "Fizz".to_string());
-    let handle_5 = |x| handle(x, 5, "Buzz".to_string());
-    let handle_15 = |x| handle(x, 15, "FizzBuzz".to_string());
+fn fizz_buzz(x: Number) -> (Number, String) {
+    let handle_3 = |x| handle(x, 3, "Fizz");
+    let handle_5 = |x| handle(x, 5, "Buzz");
+    let handle_15 = |x| handle(x, 15, "FizzBuzz");
 
     let s = handle_15(x)
         .if_unhandled_do(handle_5)
@@ -73,12 +73,8 @@ mod tests {
 
     #[test]
     fn test_handle() {
-        let label = String::default();
-        assert_eq!(
-            handle(45, 15, label.clone()),
-            FizzBuzzResult::Handled(label.clone())
-        );
-        assert_eq!(handle(66, 17, label), FizzBuzzResult::Unhandled(66));
+        assert_eq!(handle(45, 15, "foo"), FizzBuzzResult::Handled("foo"));
+        assert_eq!(handle(66, 17, "bar"), FizzBuzzResult::Unhandled(66));
     }
 
     #[test]
